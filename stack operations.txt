@@ -1,0 +1,312 @@
+Stack :	It is collection of elements arranged one above the other
+	A stack is commonly represnted in a vertical form
+	The arrangement of values in a stack will be from bottom to top
+Stack Rule is LIFO Last In First Out   OR   also called as FILO First In Last Out
+	The last element which is inserted into the stack will be
+	first element to be removed.
+
+-To manage the stack: 
+--->we use an int variable called "top" whose initial value is -1
+    It is used to identify the index position of the top most element
+--->we use an int variable called "limit" to identify the last index of the stack.
+
+-push()  : The process of adding elements into the stack is called push() operation.
+-pop()   : The process of deleting elements from the stack is called pop() operation.
+-display():The process of showing all available value of stack is called display().
+
+In push operation:
+-When we add an element, we increment top by 1
+-When we increment top, there is a possibility of a situation called "Overflow"
+-Overflow is when there is no space to add an element into the stack (stack is FULL)
+
+In pop operation:
+-When we delete an element, we decrement top by 1
+-When we decrement top, there is a possibility of a situation called "Underflow"
+-Underflow is when there is no element in the stack (stack is EMPTY)
+
+In display operation:
+-When the stack is NOT underflow then we run a loop to show the values 
+  from stack[0] to stack[top]
+
+Algorithm to perform a push operation on a stack:
+Step 1:	Increment the variable top by 1
+Step 2:	Check for overflow [condition is top>limit]
+Step 3:	If YES, then show a message "Stack Overflow", 
+	decrement top by 1 and also go to step 5
+Step 4:	If NO, accept the user input into stack[top]
+Step 5:	STOP
+
+Algorithm to perform a pop operation on a stack:
+Step 1:	Check for underflow [condition is top==-1 or top<0]
+Step 2:	If YES, then show a message "Stack Underflow", go to step 5
+Step 3:	If NO, display the value present in stack[top]
+Step 4: decrement top by 1
+Step 5:	STOP
+
+Algorithm to perform a display operation on a stack:
+Step 1:	Check for underflow [condition is top==-1 or top<0]
+Step 2:	If YES, then show a message "Stack Underflow", go to step 4
+Step 3:	If NO, display the values from stack[0] to stack[top]
+Step 4: STOP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FIFO : First In Frst Out
+	The very first element which is inserted into the stack will be
+	first element to be removed
+
+==============================================================LAB PROGRAMS
+=============
+1. Stack Operations (Creation, Push, Pop, Traverse, Peek, Search)
+c
+Copy
+Edit
+#include <stdio.h>
+#define SIZE 100
+
+int stack[SIZE];
+int top = -1;
+
+void push(int val) {
+    if (top == SIZE - 1)
+        printf("Stack Overflow\n");
+    else
+        stack[++top] = val;
+}
+
+void pop() {
+    if (top == -1)
+        printf("Stack Underflow\n");
+    else
+        printf("Popped element: %d\n", stack[top--]);
+}
+
+void peek() {
+    if (top == -1)
+        printf("Stack is empty\n");
+    else
+        printf("Top element: %d\n", stack[top]);
+}
+
+void traverse() {
+    if (top == -1)
+        printf("Stack is empty\n");
+    else {
+        printf("Stack elements: ");
+        for (int i = 0; i <= top; i++)
+            printf("%d ", stack[i]);
+        printf("\n");
+    }
+}
+
+void search(int val) {
+    for (int i = 0; i <= top; i++) {
+        if (stack[i] == val) {
+            printf("Element %d found at position %d\n", val, i);
+            return;
+        }
+    }
+    printf("Element not found\n");
+}
+
+int main() {
+    push(10);
+    push(20);
+    push(30);
+    traverse();
+    peek();
+    pop();
+    search(20);
+    search(40);
+    traverse();
+    return 0;
+}
+
+==============================================================
+2. Infix to Postfix Conversion
+c
+Copy
+Edit
+#include <stdio.h>
+#include <ctype.h>
+#define SIZE 100
+
+char stack[SIZE];
+int top = -1;
+
+void push(char ch) {
+    stack[++top] = ch;
+}
+
+char pop() {
+    return stack[top--];
+}
+
+char peek() {
+    return stack[top];
+}
+
+int precedence(char ch) {
+    switch(ch) {
+        case '+':
+        case '-': return 1;
+        case '*':
+        case '/': return 2;
+        case '^': return 3;
+    }
+    return -1;
+}
+
+void infixToPostfix(char* infix) {
+    char postfix[SIZE];
+    int i = 0, j = 0;
+    char ch;
+
+    while ((ch = infix[i++]) != '\0') {
+        if (isalnum(ch)) {
+            postfix[j++] = ch;
+        } else if (ch == '(') {
+            push(ch);
+        } else if (ch == ')') {
+            while (top != -1 && peek() != '(')
+                postfix[j++] = pop();
+            pop();  // remove '('
+        } else {
+            while (top != -1 && precedence(ch) <= precedence(peek()))
+                postfix[j++] = pop();
+            push(ch);
+        }
+    }
+
+    while (top != -1)
+        postfix[j++] = pop();
+
+    postfix[j] = '\0';
+    printf("Postfix Expression: %s\n", postfix);
+}
+
+int main() {
+    char infix[] = "a+b*(c^d-e)^(f+g*h)-i";
+    infixToPostfix(infix);
+    return 0;
+}
+==============================================================
+3.Program 3
+ Postfix Evaluation
+
+#include <stdio.h>
+#include <ctype.h>
+#include <math.h>
+#define SIZE 100
+
+int stack[SIZE];
+int top = -1;
+
+void push(int val) {
+    stack[++top] = val;
+}
+
+int pop() {
+    return stack[top--];
+}
+
+int evaluatePostfix(char* expr) {
+    int i = 0;
+    char ch;
+    while ((ch = expr[i++]) != '\0') {
+        if (isdigit(ch)) {
+            push(ch - '0');
+        } else {
+            int b = pop();
+            int a = pop();
+            switch(ch) {
+                case '+': push(a + b); break;
+                case '-': push(a - b); break;
+                case '*': push(a * b); break;
+                case '/': push(a / b); break;
+                case '^': push(pow(a, b)); break;
+            }
+        }
+    }
+    return pop();
+}
+
+int main() {
+    char postfix[] = "231*+9-";
+    int result = evaluatePostfix(postfix);
+    printf("Result of postfix evaluation: %d\n", result);
+    return 0;
+}
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+4. Towers of Hanoi Using Stack (Simulation)
+c
+Copy
+Edit
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Stack {
+    int* arr;
+    int top;
+    int capacity;
+    char name;
+} Stack;
+
+Stack* createStack(int capacity, char name) {
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    stack->capacity = capacity;
+    stack->top = -1;
+    stack->arr = (int*)malloc(sizeof(int) * capacity);
+    stack->name = name;
+    return stack;
+}
+
+void push(Stack* stack, int item) {
+    stack->arr[++stack->top] = item;
+}
+
+int pop(Stack* stack) {
+    if (stack->top == -1)
+        return -1;
+    return stack->arr[stack->top--];
+}
+
+void moveDisk(Stack* from, Stack* to) {
+    int disk = pop(from);
+    push(to, disk);
+    printf("Move disk %d from %c to %c\n", disk, from->name, to->name);
+}
+
+void towersOfHanoi(int n, Stack* source, Stack* auxiliary, Stack* destination) {
+    if (n == 1) {
+        moveDisk(source, destination);
+        return;
+    }
+    towersOfHanoi(n - 1, source, destination, auxiliary);
+    moveDisk(source, destination);
+    towersOfHanoi(n - 1, auxiliary, source, destination);
+}
+
+int main() {
+    int n = 3;
+    Stack* A = createStack(n, 'A');
+    Stack* B = createStack(n, 'B');
+    Stack* C = createStack(n, 'C');
+
+    for (int i = n; i >= 1; i--)
+        push(A, i);
+
+    towersOfHanoi(n, A, B, C);
+    return 0;																																																										
+}
